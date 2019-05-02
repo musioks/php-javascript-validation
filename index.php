@@ -1,7 +1,16 @@
 <?php
+include_once('DB.php');
 if(isset($_POST['submitData'])){
     $name=htmlspecialchars($_POST['username']);
     echo $name;
+    if(DB::connect()){
+        echo "connection true";
+    }
+    else{
+       echo  'not successful';
+    }
+
+
 }
 ?>
 <!DOCTYPE html>
