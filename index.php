@@ -94,7 +94,7 @@ if(isset($_POST['submitData'])){
             document.querySelector('#message').innerHTML = "";
             console.log(errors);
             for (let i = 0; i < errors.length; i++) {
-                document.querySelector('#message').innerHTML += errors[i] + "<br>";
+                document.querySelector('#message').innerHTML += "<ul><li>"+errors[i] + "</li> </ul>";
             }
             return false;
 
