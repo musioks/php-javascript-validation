@@ -21,6 +21,8 @@ if (filter_has_var(INPUT_POST, 'submitData')) {
             if ($sql_exec === TRUE) {
                 $message = "Data inserted Successfully!";
                 $msg_class = "success";
+                //header("Location:index.php?Success!");
+
             } else {
                 $message = "Something went wrong!";
                 $msg_class = "danger";
