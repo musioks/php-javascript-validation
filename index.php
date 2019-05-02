@@ -1,13 +1,34 @@
 <?php
 include_once('DB.php');
-if(isset($_POST['submitData'])){
-    $name=htmlspecialchars($_POST['username']);
-    echo $name;
-    if(DB::connect()){
-        echo "connection true";
-    }
-    else{
-       echo  'not successful';
+$message = "";
+$msg_class = "";
+if (filter_has_var(INPUT_POST, 'submitData')) {
+    $name = htmlspecialchars($_POST['username']);
+    $email = htmlspecialchars($_POST['email']);
+    $phone = htmlspecialchars($_POST['phone']);
+    $country = htmlspecialchars($_POST['country']);
+    $password = htmlspecialchars($_POST['password']);
+    // check if inputs are empty
+    if (!empty($name) && !empty($email) && !empty($phone) && !empty($country) && !empty($password)) {
+        // inputs not empty
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $message = "provide a valid email address";
+            $msg_class = "danger";
+        } else {
+            $insert = "INSERT INTO users(username,email,phone,country,password) VALUES(:username,:email,:phone,:country,:pass)";
+            $sql = DB::connect()->prepare($insert);
+            $sql_exec = $sql->execute([':username' => $name, ':email' => $email, ':phone' => $email, ':country' => $country, ':pass' => $password]);
+            if ($sql_exec === TRUE) {
+                $message = "Data inserted Successfully!";
+                $msg_class = "success";
+            } else {
+                $message = "Something went wrong!";
+                $msg_class = "danger";
+            }
+        }
+    } else {
+        $message = "Fill all fields";
+        $msg_class = "danger";
     }
 
 
@@ -36,12 +57,25 @@ if(isset($_POST['submitData'])){
             color: red;
         }
 
+        .danger {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
     </style>
 </head>
 <body>
 <div id="main">
+    <?php if (isset($message)) { ?>
+        <span class="<?php echo $msg_class; ?>"><?php echo $message; ?></span>
+    <?php } ?>
+
     <span id="message"></span>
-    <form name="userReg" class="userReg" onsubmit="return(checkForm());" method="post" action="<?php $_SERVER['SELF'];?>" novalidate="">
+    <form name="userReg" class="userReg" onsubmit="return(checkForm());" method="post"
+          action="<?php $_SERVER['SELF']; ?>" novalidate="">
         <label>Name</label>
         <input type="text" name="username" placeholder="Enter your Name">
         <label>Email</label>
@@ -103,7 +137,7 @@ if(isset($_POST['submitData'])){
             document.querySelector('#message').innerHTML = "";
             console.log(errors);
             for (let i = 0; i < errors.length; i++) {
-                document.querySelector('#message').innerHTML += "<ul><li>"+errors[i] + "</li> </ul>";
+                document.querySelector('#message').innerHTML += "<ul><li>" + errors[i] + "</li> </ul>";
             }
             return false;
 
